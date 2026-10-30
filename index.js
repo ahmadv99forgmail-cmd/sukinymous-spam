@@ -61,6 +61,8 @@ async function menu() {
 }
 
 async function pair() {
+    if (!sock) return console.log("[!] Menunggu koneksi WA siap...").then(()=>menu())
+    
     clr(); console.log(BANNER); console.log("-- STEP 1")
     let num = (await ask("NUMBER: ")).replace(/[^0-9]/g, "")
     if (num.startsWith("0")) num = "62" + num.slice(1)
@@ -133,6 +135,8 @@ async function spam() {
 }
 
 async function connect() {
+    clr(); console.log("[*] Menghubungkan ke WhatsApp...\n")
+    
     const { state, saveCreds } = await useMultiFileAuthState("./auth_info")
     const { version } = await fetchLatestBaileysVersion()
     isPaired = state.creds.registered
@@ -149,10 +153,13 @@ async function connect() {
         if (connection === "close") {
             lastDisconnect?.error?.output?.statusCode !== DisconnectReason.loggedOut ? connect() : process.exit(1)
         } else if (connection === "open") {
-            isPaired = true; setTimeout(menu, 1500)
+            isPaired = true; 
+            // Jangan panggil menu() di sini jika lu gak mau ke-refresh pas lagi di tengah jalan
         }
     })
-    if (isPaired) setTimeout(() => sock.user && menu(), 3000)
+
+    // Langsung panggil menu setelah socket dibuat, tanpa nunggu 'open'
+    setTimeout(menu, 1000)
 }
 
 connect()
