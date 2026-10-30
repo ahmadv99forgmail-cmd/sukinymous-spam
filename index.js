@@ -11,8 +11,9 @@ const fs = require("fs")
 const config = require("./config")
 
 const logger = pino({ level: "silent" })
-let sock, isPaired = false, isPairing = false, tgt = [], tgtName = ""
+let sock, isPaired = false, tgt = [], tgtName = ""
 let spamming = false, timer = null, rl
+let wantToPair = false // Flag buat nandain kalau user lagi di menu pairing
 
 const BANNER = `
 \x1b[33m  _____       _    _                                    \x1b[0m
@@ -54,16 +55,17 @@ async function menu() {
 
     const c = await ask("> ")
     if (c === "1" && isPaired) return select()
-    if (c === "2" && !isPaired) return pair()
+    if (c === "2" && !isPaired) {
+        wantToPair = true
+        clr(); console.log(BANNER); console.log("[*] Menunggu koneksi WA siap...\n")
+        connect() // Panggil ulang koneksi buat micu event 'qr'
+    }
     if (c === "3" && isPaired && tgt.length) return spam()
     if (c === "4") process.exit(0)
     return menu()
 }
 
-async function pair() {
-    if (!sock) { console.log("[!] WA belum siap."); return slp(1500).then(menu) }
-    
-    isPairing = true
+async function processPairing() {
     clr(); console.log(BANNER); console.log("-- STEP 1")
     let num = (await ask("NUMBER: ")).replace(/[^0-9]/g, "")
     if (num.startsWith("0")) num = "62" + num.slice(1)
@@ -73,9 +75,7 @@ async function pair() {
     while (requesting && !isPaired) {
         clr(); console.log(BANNER); console.log("-- STEP 2")
         try {
-            // KODE CUSTOM DIBUANG, PAKAI DEFAULT WA
             const code = await sock.requestPairingCode(num)
-            
             console.log(`CODE: \x1b[33m${code}\x1b[0m`)
             console.log("[!] Masukkan kode di atas ke WA.")
             
@@ -87,8 +87,7 @@ async function pair() {
             if (choice.toLowerCase() !== 'r') requesting = false
         }
     }
-    
-    isPairing = false
+    wantToPair = false
     if (!isPaired) menu()
 }
 
@@ -151,8 +150,6 @@ async function spam() {
 }
 
 async function connect() {
-    clr(); console.log("[*] Menghubungkan ke WhatsApp...\n")
-    
     const { state, saveCreds } = await useMultiFileAuthState("./auth_info")
     const { version } = await fetchLatestBaileysVersion()
     isPaired = state.creds.registered
@@ -165,7 +162,14 @@ async function connect() {
     })
 
     sock.ev.on("creds.update", saveCreds)
-    sock.ev.on("connection.update", ({ connection, lastDisconnect }) => {
+    
+    sock.ev.on("connection.update", async ({ connection, lastDisconnect, qr }) => {
+        // KUNCI UTAMANYA DI SINI: Cuma minta kode kalau WA udah ngirim sinyal 'qr'
+        if (qr && wantToPair && !isPaired) {
+            wantToPair = false
+            await processPairing()
+        }
+
         if (connection === "close") {
             const code = lastDisconnect?.error?.output?.statusCode;
             if (code === DisconnectReason.loggedOut && isPaired) {
@@ -174,10 +178,11 @@ async function connect() {
             }
         } else if (connection === "open") {
             isPaired = true;
-            if (!isPairing) setTimeout(menu, 1000)
+            if (!wantToPair) setTimeout(menu, 1000)
         }
     })
 
+    // Nampilin menu awal
     setTimeout(() => {
         if (!rl) menu();
     }, 1500)
