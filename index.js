@@ -5,15 +5,14 @@ const {
     fetchLatestBaileysVersion,
     makeCacheableSignalKeyStore,
 } = require("@whiskeysockets/baileys")
-
 const pino = require("pino")
 const readline = require("readline")
 const fs = require("fs")
 const config = require("./config")
 
 const logger = pino({ level: "silent" })
-let sock, isPaired = false, selectedTargets = [], selectedTargetName = ""
-let isSpamming = false, spamTimeout = null, rl
+let sock, isPaired = false, tgt = [], tgtName = ""
+let spamming = false, timer = null, rl
 
 const BANNER = `
 \x1b[33m  _____       _    _                                    \x1b[0m
@@ -35,111 +34,102 @@ function ask(q) {
     })
 }
 
+process.on('SIGINT', () => {
+    if (spamming) {
+        spamming = false
+        clearTimeout(timer)
+        clr(); console.log(BANNER); console.log("\x1b[31m[STOPPED]\x1b[0m")
+        setTimeout(menu, 1000)
+    } else {
+        process.exit(0)
+    }
+})
+
 async function menu() {
     clr(); console.log(BANNER)
-    console.log(isPaired ? `[1] Target: ${selectedTargetName || "None"}` : `[1] Target (Wait Pairing)`)
-    if (!isPaired) console.log(`[2] Pairing Code`)
+    console.log(isPaired ? `[1] Target: ${tgtName || "None"}` : `[1] Target (Locked)`)
+    if (!isPaired) console.log(`[2] Pairing`)
     console.log(`[3] Spam`)
     console.log(`[4] Exit\n`)
 
     const c = await ask("> ")
-    if (c === "1") { if (!isPaired) return slp(1000).then(menu); select() }
-    else if (c === "2") { if (isPaired) return slp(1000).then(menu); pair() }
-    else if (c === "3") { if (!isPaired || !selectedTargets.length) return slp(1000).then(menu); spam() }
-    else if (c === "4") process.exit(0)
-    else menu()
+    if (c === "1" && isPaired) return select()
+    if (c === "2" && !isPaired) return pair()
+    if (c === "3" && isPaired && tgt.length) return spam()
+    if (c === "4") process.exit(0)
+    return menu()
 }
 
 async function pair() {
-    clr(); console.log(BANNER)
-    console.log("-- STEP 1")
-    let num = (await ask("WHATSAPP NUMBER: ")).replace(/[^0-9]/g, "")
+    clr(); console.log(BANNER); console.log("-- STEP 1")
+    let num = (await ask("NUMBER: ")).replace(/[^0-9]/g, "")
     if (num.startsWith("0")) num = "62" + num.slice(1)
     if (num.startsWith("8")) num = "62" + num
 
     console.log("\n-- STEP 2")
     try {
         const code = await sock.requestPairingCode(num, config.customPairingCode)
-        console.log(`PAIRING CODE: \x1b[33m${code}\x1b[0m`)
-        console.log("[!] Input to WA.")
-    } catch (e) { console.log("[ERR]", e.message); await slp(2000); menu() }
+        console.log(`CODE: \x1b[33m${code}\x1b[0m`)
+    } catch (e) { 
+        console.log(e.message); await slp(1500); menu() 
+    }
 }
 
 async function select() {
-    clr(); console.log(BANNER)
-    console.log("[*] Fetching groups...\n")
+    clr(); console.log(BANNER); console.log("[*] Fetching...\n")
     try {
-        const groups = Object.values(await sock.groupFetchAllParticipating())
-        if (!groups.length) { console.log("[ERR] No groups."); return slp(2000).then(menu) }
-
-        groups.forEach((g, i) => console.log(`${i + 1}. ${g.subject || "Unknown"}${g.isCommunity ? " \x1b[33m[COMM]\x1b[0m" : ""}`))
+        const grp = Object.values(await sock.groupFetchAllParticipating())
+        if (!grp.length) return slp(1500).then(menu)
         
-        const input = await ask("\nExact Group Name: ")
-        const found = groups.find(g => g.subject?.toLowerCase() === input.toLowerCase())
-
-        if (found) {
-            selectedTargetName = found.subject
-            selectedTargets = [found.id]
-            if (found.isCommunity) {
-                groups.filter(g => g.linkedParent === found.id).forEach(sub => selectedTargets.push(sub.id))
-            }
-            console.log(`\n[+] Locked: ${found.subject} (${selectedTargets.length} targets)`)
-        } else {
-            console.log("\n[ERR] Not found.")
+        grp.forEach((g, i) => console.log(`${i + 1}. ${g.subject || "?"}${g.isCommunity ? " [COMM]" : ""}`))
+        
+        const input = await ask("\nName: ")
+        const f = grp.find(g => g.subject?.toLowerCase() === input.toLowerCase())
+        
+        if (f) {
+            tgtName = f.subject
+            tgt = [f.id]
+            if (f.isCommunity) grp.filter(g => g.linkedParent === f.id).forEach(s => tgt.push(s.id))
+            console.log(`[+] ${f.subject} (${tgt.length} targets)`)
+        } else { 
+            console.log("[!] Not found") 
         }
         await slp(1500); menu()
-    } catch (e) { console.log("[ERR]", e.message); await slp(2000); menu() }
+    } catch (e) { 
+        console.log(e.message); await slp(1500); menu() 
+    }
 }
 
 async function spam() {
-    clr(); console.log(BANNER)
-    console.log(`[TARGET] ${selectedTargetName} (${selectedTargets.length})\n`)
+    clr(); console.log(BANNER); console.log(`[TGT] ${tgtName} (${tgt.length})\n`)
     
     const txt = config.spamText
-    if (!txt) { console.log("[ERR] No text."); return slp(1500).then(menu) }
+    if (!txt) return slp(1500).then(menu)
 
     let img = null
-    if (config.imagePath && fs.existsSync(config.imagePath)) {
-        img = fs.readFileSync(config.imagePath)
-        console.log(`[SYS] Mode: Image + Text`)
-    } else {
-        console.log(`[SYS] Mode: Text`)
-    }
+    if (config.imagePath && fs.existsSync(config.imagePath)) img = fs.readFileSync(config.imagePath)
 
-    console.log(`\n[ RUNNING - Ctrl+X to STOP ]\n`)
-    isSpamming = true
-    let count = 0
-
-    readline.emitKeypressEvents(process.stdin)
-    if (process.stdin.isTTY) process.stdin.setRawMode(true)
-    process.stdin.on('keypress', (s, k) => { if (k?.ctrl && k?.name === 'x') stop() })
+    console.log(`[MODE] ${img ? "IMG+TXT" : "TXT"}`)
+    console.log(`[RUNNING - Ctrl+C to STOP]\n`)
+    
+    spamming = true
+    let cnt = 0
 
     const loop = async () => {
-        if (!isSpamming) return
-        for (let i = 0; i < selectedTargets.length; i++) {
-            if (!isSpamming) break
+        if (!spamming) return
+        for (let i = 0; i < tgt.length; i++) {
+            if (!spamming) break
             try {
-                const payload = img ? { image: img, caption: txt } : { text: txt }
-                await sock.sendMessage(selectedTargets[i], payload)
-                console.log(`[${new Date().toLocaleTimeString()}] Sent: ${++count} (${i+1}/${selectedTargets.length})`)
-            } catch (e) {
-                console.log(`[${new Date().toLocaleTimeString()}] Fail: ${e.message}`)
+                await sock.sendMessage(tgt[i], img ? { image: img, caption: txt } : { text: txt })
+                console.log(`[${new Date().toLocaleTimeString()}] Sent: ${++cnt} (${i+1}/${tgt.length})`)
+            } catch (e) { 
+                console.log(`[${new Date().toLocaleTimeString()}] Fail: ${e.message}`) 
             }
-            if (selectedTargets.length > 1) await slp(3000)
+            if (tgt.length > 1) await slp(3000)
         }
-        if (isSpamming) spamTimeout = setTimeout(loop, config.cooldownMs)
+        if (spamming) timer = setTimeout(loop, config.cooldownSeconds * 1000)
     }
     loop()
-}
-
-function stop() {
-    isSpamming = false
-    clearTimeout(spamTimeout)
-    if (process.stdin.isTTY) process.stdin.setRawMode(false)
-    process.stdin.removeAllListeners('keypress')
-    process.stdin.pause()
-    clr(); console.log(BANNER); console.log("\x1b[31m[ STOPPED ]\x1b[0m")
-    setTimeout(menu, 1000)
 }
 
 async function connect() {
@@ -157,8 +147,7 @@ async function connect() {
     sock.ev.on("creds.update", saveCreds)
     sock.ev.on("connection.update", ({ connection, lastDisconnect }) => {
         if (connection === "close") {
-            const reconnect = lastDisconnect?.error?.output?.statusCode !== DisconnectReason.loggedOut
-            reconnect ? connect() : process.exit(1)
+            lastDisconnect?.error?.output?.statusCode !== DisconnectReason.loggedOut ? connect() : process.exit(1)
         } else if (connection === "open") {
             isPaired = true; setTimeout(menu, 1500)
         }
