@@ -2,12 +2,15 @@ module.exports = {
     // Kode pairing custom (maks 8 huruf/angka)
     customPairingCode: "SUKISPAM",
 
-    // Cooldown 2 Hari dalam milidetik (2 * 24 * 60 * 60 * 1000)
-    cooldownMs: 2,
+    // Oke, risiko lu tanggung. Ubah angka 2 ini jadi 1000 (1 detik) atau 172800000 (2 hari).
+    // Kalau dibiarin 2, bot bakal nembak nonstop sampai crash.
+    cooldownMs: 3,
 
-    // Teks spam (Gunakan backtick ` di awal dan akhir biar bisa di-Enter)
-    spamText: `
-        ##Raided By TSC##
+    // Path Foto (kosongkan jika tidak mau kirim foto)
+    imagePath: "", 
+
+    // MASUKIN TEKS RAIDED LU DI ANTARA BACKTICK INI (bawah sama atas)
+    spamText: `##Raided By TSC##
         L̶̡͌̈́a̶͙͋̚g̷͓̏̕ ̶͎̓̚[̶̿͜͝Ö̶͜͝B̸͚̈́͆J̴̢͒̕]̷̯̿͑ ̶̢̎̚E̶͈͗͝x̸̙̃͝p̶̙̃͝ë̷̡́̚r̶͚̈́͘i̴̪̕͝m̷̈́̕ͅë̵͙́͘ń̴͓͛t̶̠̏̎ ̷͚͋̒￼̵͚̈́͗ 
 [̶̰̈̀O̶͙̐͠B̵͔̿̚J̸̥͑͒]̵̈́̚͜ ̵̜̈̓￼̷͕̽̕ ̷̘̐̓T̶̨̓͘Ȅ̶͎̚K̶͔͗̕S̸̪͘͝ ̶̓̎ͅL̷̰͑̑Ä̶͜͝G̷͙͆͘ ̵̟̐̎Ṁ̶̢͋Ã̶̪̔K̷̻̍̊S̷̻̽͘Ȋ̶͓͌M̷̖̍̈́Ả̶̭̐L̶̫̓̾ ̵̰̇̈￼̴̙̂̇ ̵̣͗̃[̶͔̃̓O̶̖͋̅B̵̭͑̒J̵̫͐̔]̵͚̀̅ 
 h̵̯̓́ẗ̴̞́̅t̷̪̿̈́p̸͈̓̚s̴̭̚͝:̸̨̀͂/̶͙̿͝/̶̠̉̂ ̵̘̈́̏￼̴̹̇͛ ̵̤̀̐￼̸̤͐̎ ̶̞̅̅￼̶̖̈́̈́ ̵̤̂͝￼̷͎͌͛ ̵̤̈́̐￼̸̤͐̎ ̶̞̅̅￼̶̖̈́̈́ ̵̤̂͝￼̷͎͌͛
@@ -42,5 +45,5 @@ Õ̶̖͑B̷̞̈̽J̴̮̄̒ ̵̨̔̔C̴̠̕͝R̵͕͒̿A̴͙̿̽S̴͈͗̓H̵̃̄�
 
         
     ㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤ
-    `
+ `
 }
