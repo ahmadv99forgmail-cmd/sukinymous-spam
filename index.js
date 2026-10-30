@@ -8,10 +8,10 @@ const {
 const pino = require("pino")
 const readline = require("readline")
 const fs = require("fs")
-const config = require("./config")
+const config = require("./config") // Manggil config.js
 
 const logger = pino({ level: "silent" })
-let sock, isPaired = false, tgt = [], tgtName = ""
+let sock, isPaired = false, isPairing = false, tgt = [], tgtName = ""
 let spamming = false, timer = null, rl
 
 const BANNER = `
@@ -61,20 +61,34 @@ async function menu() {
 }
 
 async function pair() {
-    if (!sock) return console.log("[!] Menunggu koneksi WA siap...").then(()=>menu())
+    if (!sock) { console.log("[!] WA belum siap."); return slp(1500).then(menu) }
     
+    isPairing = true
     clr(); console.log(BANNER); console.log("-- STEP 1")
     let num = (await ask("NUMBER: ")).replace(/[^0-9]/g, "")
     if (num.startsWith("0")) num = "62" + num.slice(1)
     if (num.startsWith("8")) num = "62" + num
 
-    console.log("\n-- STEP 2")
-    try {
-        const code = await sock.requestPairingCode(num, config.customPairingCode)
-        console.log(`CODE: \x1b[33m${code}\x1b[0m`)
-    } catch (e) { 
-        console.log(e.message); await slp(1500); menu() 
+    let requesting = true
+    while (requesting && !isPaired) {
+        clr(); console.log(BANNER); console.log("-- STEP 2")
+        try {
+            // DI SINI DIA NGAMBIL DARI CONFIG.JS
+            const code = await sock.requestPairingCode(num, config.customPairingCode)
+            
+            console.log(`CODE: \x1b[33m${code}\x1b[0m`)
+            
+            const choice = await ask("\n> Ketik 'r' untuk Retry, 'b' untuk Batal: ")
+            if (choice.toLowerCase() !== 'r') requesting = false
+        } catch (e) { 
+            console.log(`[ERR] ${e.message}`); 
+            const choice = await ask("\n> Ketik 'r' untuk Retry, 'b' untuk Batal: ")
+            if (choice.toLowerCase() !== 'r') requesting = false
+        }
     }
+    
+    isPairing = false
+    if (!isPaired) menu()
 }
 
 async function select() {
@@ -96,10 +110,11 @@ async function select() {
         } else { 
             console.log("[!] Not found") 
         }
-        await slp(1500); menu()
+        await slp(1500)
     } catch (e) { 
-        console.log(e.message); await slp(1500); menu() 
+        console.log(e.message); await slp(1500)
     }
+    menu()
 }
 
 async function spam() {
@@ -151,15 +166,20 @@ async function connect() {
     sock.ev.on("creds.update", saveCreds)
     sock.ev.on("connection.update", ({ connection, lastDisconnect }) => {
         if (connection === "close") {
-            lastDisconnect?.error?.output?.statusCode !== DisconnectReason.loggedOut ? connect() : process.exit(1)
+            const code = lastDisconnect?.error?.output?.statusCode;
+            if (code === DisconnectReason.loggedOut && isPaired) {
+                console.log("\n[!] Logged out. Hapus auth_info.");
+                process.exit(1);
+            }
         } else if (connection === "open") {
-            isPaired = true; 
-            // Jangan panggil menu() di sini jika lu gak mau ke-refresh pas lagi di tengah jalan
+            isPaired = true;
+            if (!isPairing) setTimeout(menu, 1000)
         }
     })
 
-    // Langsung panggil menu setelah socket dibuat, tanpa nunggu 'open'
-    setTimeout(menu, 1000)
+    setTimeout(() => {
+        if (!rl) menu();
+    }, 1500)
 }
 
 connect()
