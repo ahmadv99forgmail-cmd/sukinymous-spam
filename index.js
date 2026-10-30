@@ -8,7 +8,7 @@ const {
 const pino = require("pino")
 const readline = require("readline")
 const fs = require("fs")
-const config = require("./config") // Manggil config.js
+const config = require("./config")
 
 const logger = pino({ level: "silent" })
 let sock, isPaired = false, isPairing = false, tgt = [], tgtName = ""
@@ -73,10 +73,11 @@ async function pair() {
     while (requesting && !isPaired) {
         clr(); console.log(BANNER); console.log("-- STEP 2")
         try {
-            // DI SINI DIA NGAMBIL DARI CONFIG.JS
-            const code = await sock.requestPairingCode(num, config.customPairingCode)
+            // KODE CUSTOM DIBUANG, PAKAI DEFAULT WA
+            const code = await sock.requestPairingCode(num)
             
             console.log(`CODE: \x1b[33m${code}\x1b[0m`)
+            console.log("[!] Masukkan kode di atas ke WA.")
             
             const choice = await ask("\n> Ketik 'r' untuk Retry, 'b' untuk Batal: ")
             if (choice.toLowerCase() !== 'r') requesting = false
