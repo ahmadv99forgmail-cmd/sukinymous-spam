@@ -4,7 +4,7 @@ module.exports = {
 
     // Oke, risiko lu tanggung. Ubah angka 2 ini jadi 1000 (1 detik) atau 172800000 (2 hari).
     // Kalau dibiarin 2, bot bakal nembak nonstop sampai crash.
-    cooldownMs: 3,
+    cooldownSeconds: 3,
 
     // Path Foto (kosongkan jika tidak mau kirim foto)
     imagePath: "", 
