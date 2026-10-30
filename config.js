@@ -11,40 +11,341 @@ module.exports = {
 
     // MASUKIN TEKS RAIDED LU DI ANTARA BACKTICK INI (bawah sama atas)
     spamText: `##Raided By TSC##
-    (
-        L̶̡͌̈́a̶͙͋̚g̷͓̏̕ ̶͎̓̚[̶̿͜͝Ö̶͜͝B̸͚̈́͆J̴̢͒̕]̷̯̿͑ ̶̢̎̚E̶͈͗͝x̸̙̃͝p̶̙̃͝ë̷̡́̚r̶͚̈́͘i̴̪̕͝m̷̈́̕ͅë̵͙́͘ń̴͓͛t̶̠̏̎ ̷͚͋̒￼̵͚̈́͗ 
-[̶̰̈̀O̶͙̐͠B̵͔̿̚J̸̥͑͒]̵̈́̚͜ ̵̜̈̓￼̷͕̽̕ ̷̘̐̓T̶̨̓͘Ȅ̶͎̚K̶͔͗̕S̸̪͘͝ ̶̓̎ͅL̷̰͑̑Ä̶͜͝G̷͙͆͘ ̵̟̐̎Ṁ̶̢͋Ã̶̪̔K̷̻̍̊S̷̻̽͘Ȋ̶͓͌M̷̖̍̈́Ả̶̭̐L̶̫̓̾ ̵̰̇̈￼̴̙̂̇ ̵̣͗̃[̶͔̃̓O̶̖͋̅B̵̭͑̒J̵̫͐̔]̵͚̀̅ 
-h̵̯̓́ẗ̴̞́̅t̷̪̿̈́p̸͈̓̚s̴̭̚͝:̸̨̀͂/̶͙̿͝/̶̠̉̂ ̵̘̈́̏￼̴̹̇͛ ̵̤̀̐￼̸̤͐̎ ̶̞̅̅￼̶̖̈́̈́ ̵̤̂͝￼̷͎͌͛ ̵̤̈́̐￼̸̤͐̎ ̶̞̅̅￼̶̖̈́̈́ ̵̤̂͝￼̷͎͌͛
-Õ̶̖͑B̷̞̈̽J̴̮̄̒ ̵̨̔̔C̴̠̕͝R̵͕͒̿A̴͙̿̽S̴͈͗̓H̵̟̃̄ ̵͚̒̓￼̷̙̍̑ ̵̤̓͗￼̶̩͐̍ ̵̭̊̇￼̵̪̾͘ ̶̹̑̚￼̶͈͆͛ ̵̼̿͗￼̸̓͝ͅ ̴̜̂͗￼̶̠͘͝ ̸͖͑͠￼̵͚́̇ ̶̳̌̔￼̶͚̌̅ ̸̗͑̕￼̸̗̈̎ ̶̤̅́￼̵̪̅́ ̴̳̑͘￼̴̮͒̀ ̵͇͗́￼̷̡͒̈ ̴͎̈͘￼̶̹̋͌ ̸͇̄̏￼̵̡̅̓ ̵͇͐̀￼̸͓͒̕ ̷͕͋͝￼̵̻̈̾ ̸̙̒̕￼̸͇̔̉ ̵͇̇̚￼̶̡̇͆ ̵̮͘͠￼̶̞͋͑ ̴̰͐͠￼̷̙̇̐
-ا̷̲̪̟̍̿̇ل̶̡͙̗̒͒͠ل̶̙̟͈̒̚͘ا̸̝͚͕̅͌͝غ̷̥͈̖̿̃͠ ̵͎̦̪͑̍̾ا̴̼̼͈́͆͠ل̷̰͑̑أ̵̭̉̐ق̷̻̍̊ص̷̻̽͘ى̶͓̑͌ ̵̰̇̈￼̴̙̂̇ ̷̘̐̓ 
-﷽ ̵͚̈́͗ ̵̜̈̓￼̷͕̽̕ ̷̘̐̓ ￼̵̡̅̓ ̵͇͐̀￼̸͓͒̕ ̷͕͋͝￼̵̻̈̾ ̸̙̒̕￼̸͇̔̉ ̵͇̇̚ 
-الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ ￼ ￼ ￼ 
-ا̷̲̪̟̍̿̇ل̶̡͙̗̒͒͠ل̶̙̟͈̒̚͘ا̸̝͚͕̅͌͝غ̷̥͈̖̿̃͠ ̵͎̦̪͑̍̾ا̴̼̼͈́͆͠ل̷̰͑̑أ̵̭̉̐ق̷̻̍̊ص̷̻̽͘ى̶͓̑͌ ̵̰̇̈￼̴̙̂̇ ̷̘̐̓ 
-ع̷̼̈́̊ل̷̻̍̊ى̶͓̑͌ ̵̰̇̈ا̷̲̪̟̍̿̇ل̶̡͙̗̒͒͠ج̶̙̟͈̒̚͘ه̷̥͈̖̿̃͠ا̵̝͚͕̅͌͝ز̵͎̦̪͑̍̾ ̵͎̦̪͑̍̾￼̴̙̂̇ ̵̣͗̃[̶͔̃̓O̶̖͋̅B̵̭͑̒J̵̫͐̔]̵͚̀̅ 
-￼ ￼ ￼ ￼ ￼ ￼ ￼ ￼ ￼ ￼ ￼ ￼ ￼ ￼ ￼ ￼ ￼
-̵̣͗̃[̶͔̃̓O̶̖͋̅B̵̭͑̒J̵̫͐̔]̵͚̀̅ ￼ ̶̞̅̅￼̶̖̈́̈́ ̵̤̂͝￼̷͎͌͛ ̵̤̈́̐ 
-ا̷̲̪̟̍̿̇ل̶̡͙̗̒͒͠ل̶̙̟͈̒̚͘ا̸̝͚͕̅͌͝غ̷̥͈̖̿̃͠ ̴̙̂̇ ̵̣͗̃ ￼ ̵͇͐̀￼̸͓͒̕ 
-̷͕͋͝￼̵̻̈̾ ̸̙̒̕￼̸͇̔̉ ̵͇̇̚ ﷽ ̶͙̿͝/̶̠̉̂ ̵̘̈́̏￼̴̹̇͛ 
-̷͚͓͋͊̊͜k̴̭̙̭̔͌̅ȁ̷̞̲͘͜͠s̶̱̠̭̀͆͝ỉ̵̹̟̺̎͊h̷̯̬̠͒̈̌ ̷̨͉͉̎͋̚l̶̯͕͕̎̐́a̶͈̲͚͂͒̓g̷̰͚̠̈́̐͝ ̵͎̦̪͑̍̾u̶̺͈̪̿̈́̀n̵̲͙̭͌̏̑t̷͔̭̻͗̃͐u̶̬̞͉̿̎̍k̵̞̟̜͗̕̚ ̵̜̈̓￼̷͕̽̕ 
- ￼  ￼  ￼  ￼  ￼  ￼  ￼  
-̵̣͗̃[̶͔̃̓O̶̖͋̅B̵̭͑̒J̵̫͐̔]̵͚̀̅ ￼ ̶̞̅̅￼̶̖̈́̈́ ̵̤̂͝￼̷͎͌͛ ̵̤̈́̐ 
-ا̷̲̪̟̍̿̇ل̶̡͙̗̒͒͠ل̶̙̟͈̒̚͘ا̸̝͚͕̅͌͝غ̷̥͈̖̿̃͠ ̴̙̂̇ ̵̣͗̃ ￼ ̵͇͐̀￼̸͓͒̕ 
-̷͕͋͝￼̵̻̈̾ ̸̙̒̕￼̸͇̔̉ ̵͇̇̚ ﷽ ̶͙̿͝/̶̠̉̂ ̵̘̈́̏￼̴̹̇͛ 
-̷͚͓͋͊̊͜k̴̭̙̭̔͌̅ȁ̷̞̲͘͜͠s̶̱̠̭̀͆͝ỉ̵̹̟̺̎͊h̷̯̬̠͒̈̌ ̷̨͉͉̎͋̚l̶̯͕͕̎̐́a̶͈̲͚͂͒̓g̷̰͚̠̈́̐͝ ̵͎̦̪͑̍̾u̶̺͈̪̿̈́̀n̵̲͙̭͌̏̑t̷͔̭̻͗̃͐u̶̬̞͉̿̎̍k̵̞̟̜͗̕̚ ̵̜̈̓￼̷͕̽̕ 
- ￼  ￼  ￼  ￼  ￼  ￼  ￼  
-̵̣͗̃[̶͔̃̓O̶̖͋̅B̵̭͑̒J̵̫͐̔]̵͚̀̅ ￼ ̶̞̅̅￼̶̖̈́̈́ ̵̤̂͝￼̷͎͌͛ ̵̤̈́̐ 
-ا̷̲̪̟̍̿̇ل̶̡͙̗̒͒͠ل̶̙̟͈̒̚͘ا̸̝͚͕̅͌͝غ̷̥͈̖̿̃͠ ̴̙̂̇ ̵̣͗̃ ￼ ̵͇͐̀￼̸͓͒̕ 
-̷͕͋͝￼̵̻̈̾ ̸̙̒̕￼̸͇̔̉ ̵͇̇̚ ﷽ ̶͙̿͝/̶̠̉̂ ̵̘̈́̏￼̴̹̇͛ 
-̷͚͓͋͊̊͜k̴̭̙̭̔͌̅ȁ̷̞̲͘͜͠s̶̱̠̭̀͆͝ỉ̵̹̟̺̎͊h̷̯̬̠͒̈̌ ̷̨͉͉̎͋̚l̶̯͕͕̎̐́a̶͈̲͚͂͒̓g̷̰͚̠̈́̐͝ ̵͎̦̪͑̍̾u̶̺͈̪̿̈́̀n̵̲͙̭͌̏̑t̷͔̭̻͗̃͐u̶̬̞͉̿̎̍k̵̞̟̜͗̕̚ ̵̜̈̓￼̷͕̽̕ 
- ￼  ￼  ￼  ￼  ￼  ￼  ￼  
-̵̣͗̃[̶͔̃̓O̶̖͋̅B̵̭͑̒J̵̫͐̔]̵͚̀̅ ￼ ̶̞̅̅￼̶̖̈́̈́ ̵̤̂͝￼̷͎͌͛ ̵̤̈́̐ 
-ا̷̲̪̟̍̿̇ل̶̡͙̗̒͒͠ل̶̙̟͈̒̚͘ا̸̝͚͕̅͌͝غ̷̥͈̖̿̃͠ ̴̙̂̇ ̵̣͗̃ ￼ ̵͇͐̀￼̸͓͒̕ 
-̷͕͋͝￼̵̻̈̾ ̸̙̒̕￼̸͇̔̉ ̵͇̇̚ ﷽ ̶͙̿͝/̶̠̉̂ ̵̘̈́̏￼̴̹̇͛ 
-̷͚͓͋͊̊͜k̴̭̙̭̔͌̅ȁ̷̞̲͘͜͠s̶̱̠̭̀͆͝ỉ̵̹̟̺̎͊h̷̯̬̠͒̈̌ ̷̨͉͉̎͋̚l̶̯͕͕̎̐́a̶͈̲͚͂͒̓g̷̰͚̠̈́̐͝ ̵͎̦̪͑̍̾u̶̺͈̪̿̈́̀n̵̲͙̭͌̏̑t̷͔̭̻͗̃͐u̶̬̞͉̿̎̍k̵̞̟̜͗̕̚ ̵̜̈̓￼̷͕̽̕ 
- ￼  ￼  ￼  ￼  ￼  ￼  ￼  
-
-
-        
-    ㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤ
- )`
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+             RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            RAIDED
+            RAIDED
+            _____
+            
+   RAIDED BY SUKINYMOUS TOOLS
+    (  ANONYMOUS TOOLS    ) 
+     `
 }
