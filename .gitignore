@@ -1,27 +1,9 @@
-# Dependencies (Folder library Node.js, jangan di-push karena berat)
 node_modules/
-
-# WhatsApp Session (SANGAT RAHASIA, ini kunci login WA lu)
 auth_info/
 *.session
 creds.json
-
-# File konfigurasi lokal & state
 .phone
 state.json
 .env
-.env.*
-
-# File Log (Catatan error/aktivitas, gak perlu masuk repo)
 logs/
 *.log
-
-# File Sistem & Editor (Gak penting buat project)
-.DS_Store
-Thumbs.db
-desktop.ini
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
