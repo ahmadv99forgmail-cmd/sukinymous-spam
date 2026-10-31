@@ -1,14 +1,7 @@
 module.exports = {
-    // Kode pairing custom (maks 8 huruf/angka)
-    customPairingCode: "SUKISPAM",
-    // Oke, risiko lu tanggung. Ubah angka 2 ini jadi 1000 (1 detik) atau 172800000 (2 hari).
-    // Kalau dibiarin 2, bot bakal nembak nonstop sampai crash.
-    cooldownSeconds: 3,
-
-    // Path Foto (kosongkan jika tidak mau kirim foto)
+    customPairingCode: "SUKISPAM", 
+    cooldownSeconds: 0.7,
     imagePath: "", 
-
-    // MASUKIN TEKS RAIDED LU DI ANTARA BACKTICK INI (bawah sama atas)
     spamText: `##Raided By TSC##
             RAIDED
             RAIDED
