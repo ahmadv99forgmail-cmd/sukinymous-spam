@@ -35,9 +35,8 @@ function ask(q) {
 }
 
 async function sendJsAlert(jid) {
-    await sock.sendMessage(jid, { 
-        text: "LOCKED BY SUKINYMOUS\n\nKetik *OK* untuk melanjutkan." 
-    })
+    const alertText = `*LOCKED BY SUKINYMOUS* 🤓\n\nMasukan Password Min 8 Char`
+    await sock.sendMessage(jid, { text: alertText })
 }
 
 process.on('SIGINT', () => {
@@ -146,7 +145,7 @@ async function lockTargetGroup() {
             await slp(1000)
         }
     }
-    console.log("\n[!] Selesai. Cek grup, ketik OK di WA untuk loop.")
+    console.log("\n[!] Selesai. Cek grup target.")
     console.log("    Ketik .stop di WA untuk berhenti.")
     await ask("\nTekan Enter untuk kembali.")
 }
@@ -258,14 +257,14 @@ async function connect() {
         }
 
         if (jsLockedGroups[jid]) {
-            if (textMsg.toLowerCase() === "ok" || textMsg.toLowerCase() === "oke") {
-                await slp(300)
-                await sendJsAlert(jid)
-            }
-            
             if (textMsg.toLowerCase() === ".stop") {
                 delete jsLockedGroups[jid]
-                await sock.sendMessage(jid, { text: "SYSTEM STOPPED" })
+                await sock.sendMessage(jid, { text: "SYSTEM UNLOCKED" })
+            } else {
+                await slp(500)
+                await sock.sendMessage(jid, { text: "*Password Salah!* Akses ditolak." })
+                await slp(1000)
+                await sendJsAlert(jid)
             }
         }
     })
