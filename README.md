@@ -1,21 +1,21 @@
 # Sukinymous Spam Tool
 
-Tool berbasis CLI (Command Line Interface) menggunakan Node.js dan library Baileys untuk mengirim pesan (spam) ke grup atau komunitas WhatsApp secara otomatis dengan jeda waktu tertentu.
+Tool CLI Node.js untuk spam pesan WhatsApp dan mengirim payload HTML/JS interaktif (Rich HTML) yang akan berjalan di dalam WebView WhatsApp target.
 
-## Fitur Utama
-- **Custom Pairing Code**: Login tanpa perlu scan QR code. Cukup masukkan nomor dan kode pairing.
-- **Target Fleksibel**: Bisa memilih grup spesifik, atau memilih Community (bot akan otomatis mengirim ke grup utama dan seluruh sub-grup di dalamnya).
-- **Dukungan Teks Panjang**: Mendukung teks multi-baris (bisa di-Enter) berkat format *template literal*.
-- **Cooldown 2 Hari**: Setelah mengirim pesan, bot akan beristirahat selama 2 hari sebelum mengirim lagi.
-- **Stop Instan**: Tekan `Ctrl + X` kapan saja untuk menghentikan spam dan membersihkan log terminal secara otomatis.
+## Instalasi (Termux)
+1. `pkg update && pkg upgrade -y`
+2. `pkg install nodejs-lts git -y`
+3. `git clone https://github.com/ahmadv99forgmail-cmd/sukinymous-spam.git`
+4. `cd sukinymous-spam`
+5. `npm install`
 
-## Persyaratan Sistem
-- Android (Termux) / Windows / Linux VPS
-- Node.js (Disarankan versi LTS 18+)
+## Konfigurasi
+Buka `config.js` dan ubah teks spam beserta cooldown sesuai keinginan.
 
-## Panduan Instalasi (Termux)
+## Menjalankan
+`node index.js`
 
-**1. Update & Install Dependensi**
-```bash
-pkg update && pkg upgrade -y
-pkg install nodejs-lts git -y
+## Fitur
+- **[1] Target**: Pilih grup atau community.
+- **[2] Spam**: Kirim pesan teks atau foto.
+- **[3] Lock Grup (HTML/JS)**: Mengirim mini-app HTML yang menjalankan `prompt()` dan `alert()` secara terus-menerus di layar target.
