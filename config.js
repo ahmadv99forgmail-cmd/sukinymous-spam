@@ -1,6 +1,6 @@
 module.exports = {
     customPairingCode: "SUKISPAM", 
-    cooldownSeconds: 0.7,
+    cooldownSeconds: 0.8,
     imagePath: "", 
     spamText: `##Raided By TSC##
             RAIDED
